@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class MovingPlatform : MonoBehaviour
 {
-    [Header("Path")]
+  [Header("Path")]
     public Transform pointA;
     public Transform pointB;
 
@@ -21,7 +21,7 @@ public class MovingPlatform : MonoBehaviour
     {
         if (pointA == null || pointB == null)
         {
-            Debug.LogError("MovingPlatform2D: PointA/PointB is not assigned.");
+            Debug.LogError("MovingPlatform: PointA/PointB is not assigned.");
             enabled = false;
             return;
         }
@@ -34,34 +34,25 @@ public class MovingPlatform : MonoBehaviour
     {
         float t = Mathf.PingPong(Time.time * speed, 1f);
         Vector2 target = Vector2.Lerp(a, b, t);
-
-        // با MovePosition حرکت فیزیکی نرم‌تر و پایدارتره
         rb.MovePosition(target);
     }
 
+    // 🔴 این بخش تغییر کرده
     void OnCollisionEnter2D(Collision2D col)
     {
-        // اگر پلیر روی سکو نشست، بچسبه به سکو
-        if (col.collider.CompareTag("Player"))
+        var player = col.collider.GetComponentInParent<PlayerMovementPhysics>();
+        if (player != null)
         {
-            // فقط وقتی از بالا برخورد کرده (ایستادن روی سکو)
-            foreach (var c in col.contacts)
-            {
-                if (c.normal.y > 0.5f)
-                {
-                    col.collider.transform.SetParent(transform);
-                    break;
-                }
-            }
+            player.transform.SetParent(transform);
         }
     }
 
     void OnCollisionExit2D(Collision2D col)
     {
-        if (col.collider.CompareTag("Player"))
+        var player = col.collider.GetComponentInParent<PlayerMovementPhysics>();
+        if (player != null && player.transform.parent == transform)
         {
-            if (col.collider.transform.parent == transform)
-                col.collider.transform.SetParent(null);
+            player.transform.SetParent(null);
         }
     }
 }
