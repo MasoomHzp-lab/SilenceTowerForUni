@@ -9,45 +9,23 @@ public class EnemyHeadStomp : MonoBehaviour
 
     int currentHits;
 
-    void Awake()
-    {
-        currentHits = hitsToKill;
-    }
+EnemyHealth enemyHealth;
 
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        // فقط پلیر
-        if (!other.CompareTag("Player"))
-            return;
+void Awake()
+{
+    enemyHealth = GetComponentInParent<EnemyHealth>();
+}
 
-        // اگر خواستی فقط وقتی پلیر از بالا میاد حساب بشه:
-        if (requireFalling)
-        {
-            var prb = other.attachedRigidbody;
-            if (prb != null && prb.linearVelocity.y >= 0f)
-            {
-                // پلیر در حال بالا رفتن/ایستاده → استامپ حساب نکن
-                return;
-            }
-        }
+void OnTriggerEnter2D(Collider2D other)
+{
+    if (!other.CompareTag("Player")) return;
 
-        // 1) ضربه به دشمن
-        currentHits--;
+    var prb = other.attachedRigidbody;
+    if (prb != null && prb.linearVelocity.y >= 0f) return;
 
-        // 2) بونس دادن به پلیر
-        BouncePlayer(other);
-
-        // 3) اگر تموم شد → دشمن بمیره
-        if (currentHits <= 0)
-        {
-            KillEnemy();
-        }
-        else
-        {
-            // اگر بخوای می‌تونی اینجا صدا/افکت بزاری
-            // Debug.Log("Enemy stomped! Remaining hits: " + currentHits);
-        }
-    }
+    enemyHealth.TakeStompHit();
+    BouncePlayer(other);
+}
 
     void BouncePlayer(Collider2D player)
     {

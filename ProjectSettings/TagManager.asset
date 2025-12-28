@@ -10,6 +10,7 @@ TagManager:
   - WinPanel
   - LosePanel
   - EnemyHead
+  - Projectile
   layers:
   - Default
   - TransparentFX
