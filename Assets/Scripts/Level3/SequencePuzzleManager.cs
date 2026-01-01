@@ -4,49 +4,43 @@ using System.Collections.Generic;
 public class SequencePuzzleManager : MonoBehaviour
 {
    
-     [Header("Correct Order (Button IDs)")]
-    public int[] correctSequence = { 1, 2, 3 };
+  
 
-    [Header("Unlock this collider after success")]
-    public Collider2D lockedGoalCollider;
+   public int[] correctSequence = { 2, 1, 3 };
+
+    [Header("Wall to Move")]
+    public MovingWall wall;
 
     private readonly List<int> input = new();
-
-    private void Start()
-    {
-        if (lockedGoalCollider != null)
-            lockedGoalCollider.enabled = false; // قفل از اول
-    }
 
     public void Press(int id)
     {
         input.Add(id);
 
-        // چک اشتباه از همون قدم
+        Debug.Log($"[Puzzle] Input: {string.Join(",", input)}");
+
         int index = input.Count - 1;
+
+        // چک اشتباه در همان قدم
         if (index < correctSequence.Length && input[index] != correctSequence[index])
         {
-            Fail();
+            Debug.LogWarning($"[Puzzle] FAIL at step {index}. Expected {correctSequence[index]} but got {id}");
+            input.Clear();
             return;
         }
 
         if (input.Count == correctSequence.Length)
         {
-            Success();
+            Debug.Log("[Puzzle] SUCCESS! Opening wall...");
+            input.Clear();
+
+            if (wall == null)
+            {
+                Debug.LogError("[Puzzle] wall is NULL! Assign MovingWall in Inspector.");
+                return;
+            }
+
+            wall.Open();
         }
     }
-
-    void Success()
-    {
-        input.Clear();
-        if (lockedGoalCollider != null)
-            lockedGoalCollider.enabled = true; // باز شدن پایان مرحله
-    }
-
-    void Fail()
-    {
-        input.Clear();
-        // فعلاً فقط ریست میشه (بعداً اگر خواستی اینجا دشمن اسپاون کن)
-    }
- 
 }

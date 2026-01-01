@@ -11,6 +11,7 @@ TagManager:
   - LosePanel
   - EnemyHead
   - Projectile
+  - Foot
   layers:
   - Default
   - TransparentFX

@@ -1,29 +1,50 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 [RequireComponent(typeof(Collider2D))]
 public class SequenceButton : MonoBehaviour
 {
-    public int buttonID = 1;
+public int buttonID;
     public SequencePuzzleManager manager;
 
-    private bool pressed;
+    [Header("Optional - if empty, uses Player tag")]
+    public string requiredColliderTag = ""; // مثلا "Foot"
 
-    private void Reset()
+    private int overlapCount = 0; // برای جلوگیری از ریست شدن زودهنگام وقتی چند collider داریم
+
+    private bool IsValid(Collider2D other)
     {
-        GetComponent<Collider2D>().isTrigger = true;
+        if (!string.IsNullOrEmpty(requiredColliderTag))
+            return other.CompareTag(requiredColliderTag);
+
+        return other.CompareTag("Player");
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        if (pressed) return;
-        if (!other.CompareTag("Player")) return;
+        if (!IsValid(other)) return;
 
-        pressed = true;
-        if (manager != null) manager.Press(buttonID);
+        // اولین ورود معتبر = ثبت دکمه
+        if (overlapCount == 0)
+        {
+            if (manager == null)
+            {
+                Debug.LogError($"[Button {buttonID}] Manager is NULL! Assign it in Inspector.");
+                return;
+            }
 
-        // افکت اختیاری
-        transform.localScale *= 0.95f;
+            Debug.Log($"[Button {buttonID}] Pressed by {other.name}");
+            manager.Press(buttonID);   // ✅ این همون متدی هست که تو پروژه‌ت وجود داره
+        }
+
+        overlapCount++;
     }
 
+    private void OnTriggerExit2D(Collider2D other)
+    {
+        if (!IsValid(other)) return;
+
+        overlapCount = Mathf.Max(0, overlapCount - 1);
+    }
 
 }
