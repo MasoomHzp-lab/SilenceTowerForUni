@@ -11,7 +11,7 @@ public class PlayerScore : MonoBehaviour
         {
             score++;
             Debug.Log(" امتیاز: " + score);
-
+            if (AudioManager.Instance != null) AudioManager.Instance.SFX_Star();
             // حذف ستاره بعد از برخورد
             Destroy(other.gameObject);
         }

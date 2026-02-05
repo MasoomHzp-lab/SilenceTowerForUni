@@ -5,26 +5,20 @@ public class TutorialTrigger : MonoBehaviour
     [Header("UI")]
     public GameObject tutorialPanel;
 
-    private bool triggered = false;
+   private void OnTriggerEnter2D(Collider2D other)
+{
+    if (!other.CompareTag("Player")) return;
+    if (tutorialPanel == null) return;
+    if (tutorialPanel.activeSelf) return;
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (triggered) return;
-        if (!other.CompareTag("Player")) return;
+    tutorialPanel.SetActive(true);
+}
 
-        triggered = true;
-
-        if (tutorialPanel != null)
-            tutorialPanel.SetActive(true);
-    }
 
     // اینو دکمه ضربدر صدا می‌زنه
     public void ClosePanel()
     {
         if (tutorialPanel != null)
             tutorialPanel.SetActive(false);
-
-        gameObject.SetActive(false); // دیگه تریگر نشه
     }
-    }
-
+}

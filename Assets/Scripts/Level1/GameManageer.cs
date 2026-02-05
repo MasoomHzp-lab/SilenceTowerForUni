@@ -98,6 +98,7 @@ public class GameManageer : MonoBehaviour
         Time.timeScale = 0f;
         if (gameOverPanel != null) gameOverPanel.SetActive(true);
         else Debug.LogError("LosePanel is null in this scene!");
+         if (AudioManager.Instance != null) AudioManager.Instance.SFX_Lose();
     }
 
     public void Win()
@@ -105,6 +106,7 @@ public class GameManageer : MonoBehaviour
         Time.timeScale = 0f;
         if (winPanel != null) winPanel.SetActive(true);
         else Debug.LogError("WinPanel is null in this scene!");
+        if (AudioManager.Instance != null) AudioManager.Instance.SFX_Win();
     }
 
     public void RestartGame()
@@ -141,4 +143,11 @@ public class GameManageer : MonoBehaviour
     {
         Application.Quit();
     }
+    public void LoadMenu()
+{
+    Time.timeScale = 1f;
+    SceneManager.LoadScene(0);
+}
+
    }
+
