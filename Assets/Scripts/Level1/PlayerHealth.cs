@@ -1,10 +1,7 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-
 
 public class PlayerHealth : MonoBehaviour
 {
-
     [Header("Health Settings")]
     public int maxLives = 3;
     public int CurrentLives { get; private set; }
@@ -35,8 +32,13 @@ public class PlayerHealth : MonoBehaviour
 
     void TakeDamage()
     {
+        // کم شدن جون
         CurrentLives--;
         Debug.Log("جون باقی‌مانده: " + CurrentLives);
+
+        // 🎵 صدای ضربه / بمب (کم شدن جون)
+        if (AudioManager.Instance != null)
+            AudioManager.Instance.SFX_Bomb();
 
         if (CurrentLives <= 0)
         {
@@ -47,7 +49,9 @@ public class PlayerHealth : MonoBehaviour
     void GameOver()
     {
         Debug.Log("💀 Game Over!");
-        FindObjectOfType<GameManageer>().GameOver();
+        // صدا زدن گیم‌منیجر
+        GameManageer gm = FindObjectOfType<GameManageer>();
+        if (gm != null)
+            gm.GameOver();
     }
 }
-

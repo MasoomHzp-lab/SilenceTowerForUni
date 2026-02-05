@@ -23,6 +23,12 @@ public class AudioManager : MonoBehaviour
 
     private AudioClip currentBgm;
 
+    // ✅ برای ذخیره وضعیت میوت موسیقی
+    private const string BgmMuteKey = "BGM_MUTED";
+
+    // ✅ برای اینکه PauseMenu بتونه بفهمه الان میوت هست یا نه
+    public bool IsBgmMuted => bgmSource != null && bgmSource.mute;
+
     void Awake()
     {
         if (Instance != null && Instance != this)
@@ -44,6 +50,10 @@ public class AudioManager : MonoBehaviour
         sfxSource.playOnAwake = false;
         sfxSource.spatialBlend = 0f; // 2D
 
+        // ✅ لود وضعیت میوت BGM
+        bool muted = PlayerPrefs.GetInt(BgmMuteKey, 0) == 1;
+        bgmSource.mute = muted;
+
         SceneManager.sceneLoaded += OnSceneLoaded;
     }
 
@@ -54,22 +64,19 @@ public class AudioManager : MonoBehaviour
 
     private void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
-        // اینجا تعیین می‌کنیم تو هر صحنه چه BGM پلی بشه
         AudioClip target = GetBgmForScene(scene.name);
         PlayBGM(target);
     }
 
     private AudioClip GetBgmForScene(string sceneName)
     {
-        // اسم صحنه‌ها رو دقیقاً مطابق پروژه‌ت گذاشتم:
-        // FirstPage, Level1, Level2, Level3
         switch (sceneName)
         {
             case "FirstPage": return menuBGM;
             case "Level1": return level1BGM;
             case "Level2": return level2BGM;
             case "Level3": return level3BGM;
-            default: return menuBGM; // اگر صحنه جدید اضافه شد
+            default: return menuBGM;
         }
     }
 
@@ -94,6 +101,25 @@ public class AudioManager : MonoBehaviour
     {
         if (clip == null) return;
         sfxSource.PlayOneShot(clip, volume);
+    }
+
+    // ✅ فقط BGM رو میوت/آن‌میوت کن (SFX دست نخورده)
+    public void ToggleBgmMute()
+    {
+        if (bgmSource == null) return;
+        bgmSource.mute = !bgmSource.mute;
+
+        PlayerPrefs.SetInt(BgmMuteKey, bgmSource.mute ? 1 : 0);
+        PlayerPrefs.Save();
+    }
+
+    public void SetBgmMute(bool mute)
+    {
+        if (bgmSource == null) return;
+        bgmSource.mute = mute;
+
+        PlayerPrefs.SetInt(BgmMuteKey, mute ? 1 : 0);
+        PlayerPrefs.Save();
     }
 
     // برای راحتی:
