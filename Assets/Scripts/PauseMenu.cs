@@ -1,28 +1,28 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UI;
+using TMPro;
 
 public class PauseMenu : MonoBehaviour
 {
     [Header("UI")]
-    public GameObject pausePanel;      // پنل پاز
-    public Button muteButton;          // دکمه میوت
-    public Sprite muteOnIcon;          // (اختیاری) آیکن وقتی میوت هست
-    public Sprite muteOffIcon;         // (اختیاری) آیکن وقتی میوت نیست
-    public Image muteButtonImage;      // (اختیاری) تصویر دکمه
+    public GameObject pausePanel;
+
+    [Header("Mute Button Text")]
+    public TMP_Text muteButtonText; // متن دکمه Mute / Unmute
 
     bool isPaused;
 
     void Start()
     {
-        if (pausePanel != null) pausePanel.SetActive(false);
+        if (pausePanel != null)
+            pausePanel.SetActive(false);
+
         isPaused = false;
-        UpdateMuteUI();
+        UpdateMuteText();
     }
 
     void Update()
     {
-        // اگر با ESC میخوای باز/بسته شه:
         if (Input.GetKeyDown(KeyCode.Escape))
         {
             if (isPaused) Resume();
@@ -32,14 +32,14 @@ public class PauseMenu : MonoBehaviour
 
     public void Pause()
     {
-        if (pausePanel != null) pausePanel.SetActive(true);
+        pausePanel.SetActive(true);
         Time.timeScale = 0f;
         isPaused = true;
     }
 
     public void Resume()
     {
-        if (pausePanel != null) pausePanel.SetActive(false);
+        pausePanel.SetActive(false);
         Time.timeScale = 1f;
         isPaused = false;
     }
@@ -47,36 +47,34 @@ public class PauseMenu : MonoBehaviour
     public void RestartLevel()
     {
         Time.timeScale = 1f;
-        var scene = SceneManager.GetActiveScene();
-        SceneManager.LoadScene(scene.name);
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
 
     public void GoToMenu()
     {
+        if (pausePanel != null) pausePanel.SetActive(false);
+        isPaused = false;
+
         Time.timeScale = 1f;
-        SceneManager.LoadScene("FirstPage"); // اسم منو تو پروژه‌ت
+        SceneManager.LoadScene("FirstPage");
     }
 
-    // ✅ فقط BGM میوت میشه (نه SFX)
+
+    // 🔊 فقط BGM میوت / آن‌میوت میشه
     public void ToggleMuteBGM()
     {
         if (AudioManager.Instance != null)
             AudioManager.Instance.ToggleBgmMute();
 
-        UpdateMuteUI();
+        UpdateMuteText();
     }
 
-    void UpdateMuteUI()
+    void UpdateMuteText()
     {
-        if (AudioManager.Instance == null) return;
+        if (muteButtonText == null || AudioManager.Instance == null) return;
 
-        if (muteButtonImage != null && muteOnIcon != null && muteOffIcon != null)
-        {
-            muteButtonImage.sprite = AudioManager.Instance.IsBgmMuted ? muteOnIcon : muteOffIcon;
-        }
-
-        // اگر به جای آیکن، متن دکمه داری:
-        // var txt = muteButton.GetComponentInChildren<TMPro.TMP_Text>();
-        // if (txt != null) txt.text = AudioManager.Instance.IsBgmMuted ? "Unmute Music" : "Mute Music";
+        muteButtonText.text = AudioManager.Instance.IsBgmMuted
+            ? "Unmute"
+            : "Mute";
     }
 }
